@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}Scan Image{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <h2>Upload Your Image</h2>
+    <p>Please ensure the image is clear, well-lit, and focused on the area of concern.</p>
+    
+    <!-- Image Preview Placeholder -->
+    <div id="image-preview-container" style="text-align: center; margin: 2rem 0; display: none;">
+        <img id="image-preview" src="#" alt="Image preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    </div>
+    
+    <form action="{{ url_for('analyze_image') }}" method="post" enctype="multipart/form-data">
+        <div class="file-drop-zone">
+            <input type="file" name="image" id="image-upload" required>
+            <label for="image-upload" class="file-drop-label">
+                <div class="upload-icon">📁</div>
+                <p>Drag & Drop your image here or</p>
+                <span class="btn btn-secondary">BROWSE FILES</span>
+            </label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-large" id="analyze-btn" disabled>ANALYZE IMAGE</button>
+    </form>
+</div>
+
+<script>
+    const fileInput = document.getElementById('image-upload');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const previewContainer = document.getElementById('image-preview-container');
+    const previewImg = document.getElementById('image-preview');
+
+    function checkFormValidity() {
+        analyzeBtn.disabled = fileInput.files.length === 0;
+    }
+
+    function showPreview() {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block'; // Show the preview
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = 'none'; // Hide if no file
+        }
+    }
+
+    fileInput.addEventListener('change', () => {
+        checkFormValidity();
+        showPreview();
+    });
+</script>
+{% endblock %}

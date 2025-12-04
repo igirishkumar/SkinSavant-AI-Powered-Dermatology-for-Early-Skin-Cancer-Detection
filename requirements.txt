@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+torch
+torchvision
+Pillow
+numpy
+opencv-python
+gunicorn

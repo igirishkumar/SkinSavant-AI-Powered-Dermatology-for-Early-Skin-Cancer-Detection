@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>More Than a Scan. Your Personal AI Skin Consultant.</h1>
+        <p>Go beyond a simple risk assessment. Understand the 'why' with AI-powered explanations, get personalized recommendations, and chat with our intelligent assistant.</p>
+        
+        <!-- The CTA button changes based on whether the user is logged in -->
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('scan') }}" class="btn btn-primary btn-large">START YOUR SCAN</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">LOGIN TO START</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="how-it-works">
+    <div class="container">
+        <h2>Our Advanced Features</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="icon">🧠</div>
+                <h3>1. Explainable AI</h3>
+                <p>See our AI's reasoning with Grad-CAM.</p>
+            </div>
+            <div class="step">
+                <div class="icon">💡</div>
+                <h3>2. Smart Insights</h3>
+                <p>Get info from trusted sources via RAG.</p>
+            </div>
+            <div class="step">
+                <div class="icon">🗣️</div>
+                <h3>3. 24/7 Assistant</h3>
+                <p>Ask questions via text or voice.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

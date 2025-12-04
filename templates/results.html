@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Analysis Results{% endblock %}
+
+{% block content %}
+<div class="results-dashboard">
+    <div class="dashboard-grid">
+        <!-- Left Panel: Original Image & Summary -->
+        <div class="panel core-result">
+            <img src="{{ url_for('static', filename=scan.image_path.replace('static/', '')) }}" alt="Uploaded Image" class="result-main-image">
+            
+            <div class="result-summary result-{{ scan.simple_risk }}">
+                <h3>{{ scan.full_class_name }}</h3>
+                <p>Risk Level: {{ scan.simple_risk.capitalize() }}</p>
+                <p>Confidence: {{ "%.2f"|format(scan.confidence * 100) }}%</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Two Panels -->
+        <div class="right-side-panels">
+            <!-- Top Panel: Tabs for Insights & Grad-CAMs -->
+            <div class="panel interactive-panel">
+                <div class="tabs">
+                    <button class="tab-button active" onclick="openTab(event, 'insights')">AI Insights</button>
+                    <button class="tab-button" onclick="openTab(event, 'gradcams')">Grad-CAMs</button>
+                    <button class="tab-button" onclick="openTab(event, 'recommendations')">Recommendations</button>
+                </div>
+                
+                <div id="insights" class="tab-content active">
+                    <h4>What the AI Found</h4>
+                    <p>Our model classified this lesion as <strong>{{ scan.full_class_name }}</strong>. The confidence score indicates how certain it is of this classification. Always consult a dermatologist for a definitive diagnosis.</p>
+                </div>
+
+                <!-- THIS IS THE CRITICAL PART -->
+                <div id="gradcams" class="tab-content">
+                    <h4>Explainable AI (Grad-CAM)</h4>
+                    <p>The following heatmaps highlight the regions the AI focused on for its top 3 predictions. Brighter colors indicate areas of higher importance.</p>
+                    <div class="gradcam-gallery">
+                        {% for gradcam_path in scan.gradcam_path.split(',') %}
+                            <img src="{{ url_for('static', filename=gradcam_path.replace('static/', '')) }}" alt="Grad-CAM Heatmap" class="gradcam-gallery-image">
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div id="recommendations" class="tab-content">
+                    <h4>Personalized Recommendations</h4>
+                    <p>{{ recommendation.text }}</p>
+                    <p><small><strong>Source:</strong> {{ recommendation.source }}</small></p>
+                </div>
+            </div>
+
+            <!-- Bottom Panel: AI Assistant -->
+            <div class="panel chat-panel">
+                <div class="chat-panel-header">
+                    <h4>Chat with Savant</h4>
+                </div>
+                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="e.g., What does an irregular border mean?">
+                    <button id="mic-button">🎤</button>
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    // Add this to your main.js to make the "Chat with Savant" link work
+    document.getElementById('chat-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Open the chat in a new tab or a modal
+        alert('Chat feature would open here!');
+    });
+</script>
+{% endblock %}

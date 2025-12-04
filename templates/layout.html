@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinSavant - {% block title %}{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('index') }}" class="sidebar-logo-link">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="sidebar-logo-img">
+            </a>
+            <button id="sidebar-toggle" class="sidebar-toggle-btn" type="button">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('index') }}" class="nav-item">
+                <span class="nav-icon"><i class="fas fa-home"></i></span>
+                <span class="nav-text">Home</span>
+            </a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('scan') }}" class="nav-item">
+                    <span class="nav-icon"><i class="fas fa-camera"></i></span>
+                    <span class="nav-text">New Scan</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="nav-item">
+                    <span class="nav-icon"><i class="fas fa-folder-open"></i></span>
+                    <span class="nav-text">My History</span>
+                </a>
+                <a href="#" class="nav-item" id="chat-link">
+                    <span class="nav-icon"><i class="fas fa-comments"></i></span>
+                    <span class="nav-text">Chat with Savant</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            {% endif %}
+        </nav>
+        <div class="sidebar-footer">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                    <span class="nav-icon"><i class="fas fa-sign-in-alt"></i></span>
+                    <span class="nav-text">Login</span>
+                </a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- Top Header Bar -->
+    <header class="top-header" id="top-header">
+        <div class="header-left">
+            <!-- <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkinSavant Logo" class="header-logo"> -->
+            <h1 class="header-title">SkinSavant</h1>
+        </div>
+        <div class="header-right">
+            {% if current_user.is_authenticated %}
+                <button id="open-chat-btn" class="btn btn-chat" type="button">
+                    <i class="fas fa-comments"></i>
+                    <span>Open Chat</span>
+                </button>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="container">
+              {% for message in messages %}
+                <div class="flash-messages">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+
+        <!-- Footer -->
+        {% block footer %}
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 SkinSavant. All Rights Reserved.</p>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+            </div>
+        </footer>
+        {% endblock %}
+    </main>
+
+    <!-- JavaScript -->
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% endblock %}
+
+    <script>
+    document.querySelector('.sidebar-toggle-btn').onclick = function() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+        console.log('Toggled!');
+    };
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}My History{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Analysis History</h2>
+    <p>Track changes over time. Click on any scan to see the full report.</p>
+    
+    {% if scans %}
+        <div class="history-grid">
+            {% for scan in scans %}
+            <div class="history-item">
+                <a href="{{ url_for('show_results', scan_id=scan.id) }}">
+                    <img src="{{ url_for('static', filename=scan.image_path.replace('static/', '')) }}" alt="Scan Thumbnail">
+                    <div class="history-details">
+                        <p class="date">Scan ID: {{ scan.id }}</p>
+                        <p class="risk result-{{ scan.risk_level }}">Risk: {{ scan.risk_level.upper() }}</p>
+                    </div>
+                    <span class="view-button">View Full Report →</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no past scans. <a href="{{ url_for('scan') }}">Start your first analysis now!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

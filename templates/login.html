@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <h2>Login to Your Account</h2>
+    
+    <!-- The form sends a POST request to the /login route -->
+    <form method="post">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <!-- Password input type hides the characters -->
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-large">Login</button>
+    </form>
+
+    <!-- Helpful information for the user testing the application -->
+    <p style="text-align:center; margin-top: 1rem;">
+        Demo User: <strong>testuser</strong> / <strong>password123</strong>
+    </p>
+</div>
+{% endblock %}
