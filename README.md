@@ -1,11 +1,7 @@
-# SkinSavant-AI-Powered-Dermatology-for-Early-Skin-Cancer-Detection
+# SkinSavant 🔬
 
 > AI-powered dermatology platform transforming single image inputs into comprehensive clinical intelligence
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)]()
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)]()
-[![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)]()
-[![License](https://img.shields.io/badge/License-MIT-yellow)]()
 [![Accuracy](https://img.shields.io/badge/Accuracy-90%25+-brightgreen)]()
 [![Melanoma Detection](https://img.shields.io/badge/Melanoma%20Sensitivity-92%25-red)]()
 [![Model](https://img.shields.io/badge/Model-DenseNet169-blue)]()
@@ -15,9 +11,28 @@
 
 SkinSavant is a cutting-edge dermatology platform that leverages deep learning to classify skin lesions with remarkable accuracy. The system reduces diagnostic time by **70%** while improving documentation accuracy by **95%**, making it a valuable tool for clinical workflows.
 
+## 📸 Web Application Interface
+
+### Home Page
+![SkinSavant Home Page](screenshots/home.png)
+*User-friendly interface for uploading and analyzing skin lesion images*
+
+### Analysis Results
+![Analysis Results](screenshots/results.png)
+*Comprehensive results page showing AI predictions, confidence scores, and risk assessment*
+
+### Grad-CAM Visualization
+![Grad-CAM Heatmap](screenshots/gradcam.png)
+*Model explainability through Grad-CAM heatmap highlighting areas of focus*
+
+### Chat Interface
+![AI Chat Assistant](screenshots/chat.png)
+*Interactive chat for discussing results and getting personalized insights*
+
+
 ## 🏆 Key Achievements
 
-- **91.25% Overall Accuracy** on validation set
+- **90%+ Overall Accuracy** on validation set
 - **92% Sensitivity** for melanoma detection (critical for early intervention)
 - **0.95 AUC** for melanoma detection
 - **89% Specificity** across all classes
@@ -36,7 +51,7 @@ After extensive experimentation with multiple architectures, **DenseNet169** eme
 | EfficientNet-B0 | 67% | Underperformed on imbalanced data |
 | EfficientNet-B4 | 68% | Moderate improvement over B0 |
 | EfficientNet-B5 | 71% | Best among EfficientNet variants |
-| **DenseNet169** | **91.25%** | **Selected for production** ✓ |
+| **DenseNet169** | **90%+** | **Selected for production** ✓ |
 
 #### Why DenseNet169?
 
@@ -160,7 +175,7 @@ training_config = {
 
 ```
 Overall Performance:
-├── Accuracy: 91.25% on validation set
+├── Accuracy: 90%+ on validation set
 ├── AUC (Melanoma Detection): 0.95
 ├── Sensitivity (High-risk lesions): 92%
 └── Specificity: 89%
