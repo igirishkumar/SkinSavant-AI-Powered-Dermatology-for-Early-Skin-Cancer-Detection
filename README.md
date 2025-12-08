@@ -15,27 +15,8 @@ SkinSavant is a cutting-edge dermatology platform that leverages deep learning t
 
 🎬 Live Demo
 
-https://imgur.com/a/iSOqxdU
-
-Complete workflow: Upload → Analysis → Results → Grad-CAM Visualization
-
-### Home Page
-![SkinSavant Home Page](screenshots/home.png)
-*User-friendly interface for uploading and analyzing skin lesion images*
-
-### Analysis Results
-![Analysis Results](screenshots/results.png)
-*Comprehensive results page showing AI predictions, confidence scores, and risk assessment*
-
-### Grad-CAM Visualization
-![Grad-CAM Heatmap](screenshots/gradcam.png)
-*Model explainability through Grad-CAM heatmap highlighting areas of focus*
-
-### Chat Interface
-![AI Chat Assistant](screenshots/chat.png)
-*Interactive chat for discussing results and getting personalized insights*
-
-https://imgur.com/a/iSOqxdU
+![SkinSavant Demo](https://i.imgur.com/5chge1U.gif)
+Complete workflow: Upload → Analysis → Results → Grad-CAM Visualization → Chat Interface
 
 
 ## 🏆 Key Achievements
