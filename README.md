@@ -15,7 +15,7 @@ SkinSavant is a cutting-edge dermatology platform that leverages deep learning t
 
 🎬 Live Demo
 
-![SkinSavant Demo](https://i.imgur.com/5chge1U.gif)
+![SkinSavant Demo](https://i.imgur.com/QJ7H6we.gif)
 Complete workflow: Upload → Analysis → Results → Grad-CAM Visualization → Chat Interface
 
 
