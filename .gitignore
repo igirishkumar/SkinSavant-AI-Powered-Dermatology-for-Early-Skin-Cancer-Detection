@@ -6,6 +6,14 @@ __pycache__/
 # C extensions
 *.so
 
+/static/gradcam_outputs/
+/static/images/
+/static/uploads/
+
+
+
+
+
 # Distribution / packaging
 .Python
 build/
@@ -54,6 +62,10 @@ cover/
 # Translations
 *.mo
 *.pot
+
+best_model.pth 
+docker-compose.yml
+Dockerfile
 
 # Django stuff:
 *.log

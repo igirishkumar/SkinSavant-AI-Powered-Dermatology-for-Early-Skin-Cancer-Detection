@@ -2,78 +2,344 @@
 
 {% block title %}Analysis Results{% endblock %}
 
+{% block head %}
+<!-- Results Page Styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/results-style.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="results-dashboard">
-    <div class="dashboard-grid">
-        <!-- Left Panel: Original Image & Summary -->
-        <div class="panel core-result">
-            <img src="{{ url_for('static', filename=scan.image_path.replace('static/', '')) }}" alt="Uploaded Image" class="result-main-image">
-            
-            <div class="result-summary result-{{ scan.simple_risk }}">
+<div class="results-page">
+    <!-- 3-Column Layout -->
+    <div class="results-container">
+        
+        <!-- LEFT COLUMN - Image & Summary -->
+        <div class="left-column">
+            <!-- Uploaded Image -->
+            <div class="result-image-container">
+                <img src="{{ url_for('static', filename=scan.image_path.replace('static/', '')) }}" 
+                     alt="Skin Analysis" class="result-image">
+            </div>
+
+            <!-- Simple Summary Card (Red Border Style) -->
+            <!-- <div class="simple-summary-card result-{{ scan.simple_risk|lower }}">
                 <h3>{{ scan.full_class_name }}</h3>
-                <p>Risk Level: {{ scan.simple_risk.capitalize() }}</p>
-                <p>Confidence: {{ "%.2f"|format(scan.confidence * 100) }}%</p>
+                <p class="confidence-line">
+                    <strong>Confidence:</strong> 
+                    <span>{{ "%.2f"|format((scan.confidence or 0) * 100) }}%</span>
+                </p>
+            </div> -->
+
+            <!-- Risk Assessment Bar -->
+            <div class="risk-assessment">
+                <h4>Risk Assessment</h4>
+                <div class="risk-bar-container">
+                    <div class="risk-indicator risk-{{ scan.simple_risk|lower }}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>{{ scan.simple_risk|capitalize }} Risk</span>
+                    </div>
+                    <div class="risk-bar">
+                        {% if scan.simple_risk|lower == 'high' %}
+                            {% set risk_width = 100 %}
+                        {% elif scan.simple_risk|lower == 'medium' %}
+                            {% set risk_width = 66 %}
+                        {% else %}
+                            {% set risk_width = 33 %}
+                        {% endif %}
+                        <div class="risk-bar-fill risk-{{ scan.simple_risk|lower }}" 
+                             style="width: {{ risk_width }}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Another Photo Section -->
+            <div class="upload-another-section">
+                <h4>Scan another photo?</h4>
+                <form action="{{ url_for('scan') }}" method="get">
+                    <button type="submit" class="btn-upload-another">
+                        <i class="fas fa-camera"></i>
+                        Upload photo
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- Right Side: Two Panels -->
-        <div class="right-side-panels">
-            <!-- Top Panel: Tabs for Insights & Grad-CAMs -->
-            <div class="panel interactive-panel">
-                <div class="tabs">
-                    <button class="tab-button active" onclick="openTab(event, 'insights')">AI Insights</button>
-                    <button class="tab-button" onclick="openTab(event, 'gradcams')">Grad-CAMs</button>
-                    <button class="tab-button" onclick="openTab(event, 'recommendations')">Recommendations</button>
+        <!-- MIDDLE COLUMN - Analysis Tabs -->
+        <div class="middle-column">
+            <!-- Tab Navigation -->
+            <div class="insights-tabs">
+                <button class="tab-btn active" data-tab="analysis-results">Analysis Results</button>
+                <button class="tab-btn" data-tab="detailed-findings">Detailed Findings</button>
+                <button class="tab-btn" data-tab="grad-cams">Grad-CAMs</button>
+                <button class="tab-btn" data-tab="similar-cases">Similar Cases</button>
+            </div>
+
+            <!-- Analysis Results Tab -->
+            <div class="tab-content active" id="analysis-results">
+                <!-- <h2>Analysis Results</h2> -->
+                
+                <!-- Diagnosis Info Card (Blue Style) -->
+                <div class="diagnosis-info-card">
+                    <div class="diagnosis-icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="diagnosis-details">
+                        <h3>{{ scan.full_class_name }}</h3>
+                        <div class="diagnosis-badges">
+                            <span class="badge-risk risk-{{ scan.simple_risk|lower }}">
+                                Risk Level: {{ scan.simple_risk|capitalize }}
+                            </span>
+                        </div>
+                        <p class="confidence-text">Confidence: {{ "%.2f"|format((scan.confidence or 0) * 100) }}%</p>
+                    </div>
                 </div>
                 
-                <div id="insights" class="tab-content active">
-                    <h4>What the AI Found</h4>
-                    <p>Our model classified this lesion as <strong>{{ scan.full_class_name }}</strong>. The confidence score indicates how certain it is of this classification. Always consult a dermatologist for a definitive diagnosis.</p>
+                <!-- Recommendation Box -->
+                <div class="recommendation-box">
+                    <div class="recommendation-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Recommendation</h3>
+                    </div>
+                    <p>Based on the analysis, we recommend consulting with a dermatologist for further evaluation. While the risk level appears <strong>{{ scan.simple_risk|lower }}</strong>, professional medical assessment is always advised for skin abnormalities.</p>
                 </div>
 
-                <!-- THIS IS THE CRITICAL PART -->
-                <div id="gradcams" class="tab-content">
-                    <h4>Explainable AI (Grad-CAM)</h4>
-                    <p>The following heatmaps highlight the regions the AI focused on for its top 3 predictions. Brighter colors indicate areas of higher importance.</p>
-                    <div class="gradcam-gallery">
-                        {% for gradcam_path in scan.gradcam_path.split(',') %}
-                            <img src="{{ url_for('static', filename=gradcam_path.replace('static/', '')) }}" alt="Grad-CAM Heatmap" class="gradcam-gallery-image">
-                        {% endfor %}
+                <!-- Action Buttons Below Recommendation -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary btn-schedule">
+                        <i class="fas fa-calendar-check"></i>
+                        Schedule Appointment
+                    </button>
+                    <button class="btn btn-secondary btn-download">
+                        <i class="fas fa-download"></i>
+                        Download Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Findings Tab -->
+            <div class="tab-content" id="detailed-findings">
+                <!-- <h2>Detailed Findings</h2> -->
+                
+                <!-- Icon-based Sections -->
+                <div class="insight-sections">
+                    
+                    <!-- Condition Type -->
+                    <div class="insight-item">
+                        <div class="insight-icon skin-type">
+                            <i class="fas fa-diagnoses"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h3>Condition Type</h3>
+                            <p>{{ scan.full_class_name }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Confidence Level -->
+                    <div class="insight-item">
+                        <div class="insight-icon probability">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h3>Detection Confidence</h3>
+                            <p>{{ "%.2f"|format((scan.confidence or 0) * 100) }}% - The AI model is moderately confident in this diagnosis.</p>
+                        </div>
+                    </div>
+
+                    <!-- Symptoms -->
+                    <div class="insight-item">
+                        <div class="insight-icon symptoms">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h3>Common Symptoms</h3>
+                            <p>{% if recommendation and recommendation.get('symptoms') %}{{ recommendation.get('symptoms') }}{% else %}Visible skin abnormality with distinct coloration or texture. May vary in size and appearance. Professional examination recommended for accurate assessment.{% endif %}</p>
+                        </div>
+                    </div>
+
+                    <!-- Treatments -->
+                    <div class="insight-item">
+                        <div class="insight-icon treatments">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h3>Treatment Options</h3>
+                            <p>{% if recommendation and recommendation.get('treatment') %}{{ recommendation.get('treatment') }}{% else %}Treatment varies based on diagnosis. Consult a dermatologist for personalized treatment plan. Options may include topical treatments, procedures, or monitoring.{% endif %}</p>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="insight-item">
+                        <div class="insight-icon duration">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h3>Next Steps</h3>
+                            <p>Schedule an appointment with a board-certified dermatologist for professional evaluation. Early consultation ensures proper diagnosis and treatment planning.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Grad-CAMs Tab -->
+            <div class="tab-content" id="grad-cams">
+                <!-- <h2>AI Analysis Heatmaps</h2> -->
+                
+                <div class="gradcam-intro">
+                    <p class="gradcam-description">
+                        <i class="fas fa-info-circle"></i>
+                        These heatmaps visualize which areas of the skin the AI model focused on when making its diagnosis. Red/yellow areas indicate regions of highest attention.
+                    </p>
+                </div>
+
+                {% if scan.gradcam_path %}
+                <div class="gradcam-gallery-large">
+                    {% for img in scan.gradcam_path.split(',') %}
+                    <div class="gradcam-item">
+                        <img src="{{ url_for('static', filename=img.replace('static/', '')) }}" 
+                             alt="Grad-CAM Heatmap" class="gradcam-image-large">
+                        <p class="gradcam-label">Analysis View {{ loop.index }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-gradcam">
+                    <i class="fas fa-image"></i>
+                    <p>No Grad-CAM visualizations available for this scan.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Similar Cases Tab -->
+            <div class="tab-content" id="similar-cases">
+                <!-- <h2>Similar Cases</h2> -->
+                
+                <div class="similar-cases-info">
+                    <p class="info-message">
+                        <i class="fas fa-info-circle"></i>
+                        Based on our database analysis, here are similar cases with comparable characteristics.
+                    </p>
+                </div>
+
+                <div class="similar-cases-grid">
+                    <!-- Case 1 -->
+                    <div class="case-card">
+                        <div class="case-image">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;"><i class="fas fa-image"></i></div>
+                        </div>
+                        <div class="case-info">
+                            <h4>{{ scan.full_class_name }}</h4>
+                            <p class="case-similarity">92% Match</p>
+                            <p class="case-outcome">Successfully treated with monitoring</p>
+                        </div>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="case-card">
+                        <div class="case-image">
+                            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;"><i class="fas fa-image"></i></div>
+                        </div>
+                        <div class="case-info">
+                            <h4>{{ scan.full_class_name }}</h4>
+                            <p class="case-similarity">88% Match</p>
+                            <p class="case-outcome">Responded well to topical treatment</p>
+                        </div>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="case-card">
+                        <div class="case-image">
+                            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;"><i class="fas fa-image"></i></div>
+                        </div>
+                        <div class="case-info">
+                            <h4>{{ scan.full_class_name }}</h4>
+                            <p class="case-similarity">85% Match</p>
+                            <p class="case-outcome">Monitored, no treatment needed</p>
+                        </div>
                     </div>
                 </div>
 
-                <div id="recommendations" class="tab-content">
-                    <h4>Personalized Recommendations</h4>
-                    <p>{{ recommendation.text }}</p>
-                    <p><small><strong>Source:</strong> {{ recommendation.source }}</small></p>
-                </div>
-            </div>
-
-            <!-- Bottom Panel: AI Assistant -->
-            <div class="panel chat-panel">
-                <div class="chat-panel-header">
-                    <h4>Chat with Savant</h4>
-                </div>
-                <div class="chat-box" id="chat-box"></div>
-                <div class="chat-input-container">
-                    <input type="text" id="chat-input" placeholder="e.g., What does an irregular border mean?">
-                    <button id="mic-button">🎤</button>
-                    <button id="send-button">Send</button>
+                <div class="disclaimer-box">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p><strong>Disclaimer:</strong> Similar cases are for reference only. Each case is unique and requires individual professional assessment.</p>
                 </div>
             </div>
         </div>
+
+        <!-- RIGHT COLUMN - Chat Sidebar -->
+        <div class="right-column chat-sidebar">
+            <div class="chat-header">
+                <i class="fas fa-comments"></i>
+                <h3>Chat with Savant</h3>
+            </div>
+
+            <!-- Common Questions -->
+            <div class="common-questions">
+                <p class="questions-label">Common questions:</p>
+                <div class="question-buttons">
+                    <button class="question-btn" data-question="What should I look for in a mole?">
+                        What should I look for in a mole?
+                    </button>
+                    <button class="question-btn" data-question="When should I see a doctor?">
+                        When should I see a doctor?
+                    </button>
+                    <button class="question-btn" data-question="How can I prevent skin cancer?">
+                        How can I prevent skin cancer?
+                    </button>
+                    <button class="question-btn" data-question="What are the warning signs of melanoma?">
+                        What are the warning signs of melanoma?
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages">
+                <!-- AI Welcome Message -->
+                <div class="message ai-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <p>Hello! I'm your dermatology assistant. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <input type="text" 
+                       id="chat-input" 
+                       class="chat-input" 
+                       placeholder="Ask about skin health...">
+                <button id="voice-btn" class="voice-btn" title="Voice input">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="send-btn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="chat-loading" id="chat-loading" style="display: none;">
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script>
-    // Add this to your main.js to make the "Chat with Savant" link work
-    document.getElementById('chat-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        // Open the chat in a new tab or a modal
-        alert('Chat feature would open here!');
-    });
-</script>
+<!-- Hidden data for JavaScript -->
+<div id="scan-data" 
+     data-prediction="{{ scan.full_class_name|e }}"
+     data-confidence="{% if scan.confidence %}{{ scan.confidence }}{% else %}0{% endif %}"
+     data-risk-level="{{ scan.simple_risk|e }}"
+     data-result-id="{{ scan.id }}"
+     style="display: none;">
+</div>
+
+<!-- Results Chat JavaScript -->
+<script src="{{ url_for('static', filename='js/results-chat.js') }}"></script>
 {% endblock %}

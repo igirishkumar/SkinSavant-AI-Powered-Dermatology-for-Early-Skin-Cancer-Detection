@@ -11,7 +11,7 @@
         <div class="history-grid">
             {% for scan in scans %}
             <div class="history-item">
-                <a href="{{ url_for('show_results', scan_id=scan.id) }}">
+                <a href="{{ url_for('show_results', scan_id=scan.id) }}" class="history-link">
                     <img src="{{ url_for('static', filename=scan.image_path.replace('static/', '')) }}" alt="Scan Thumbnail">
                     <div class="history-details">
                         <p class="date">Scan ID: {{ scan.id }}</p>
@@ -19,6 +19,13 @@
                     </div>
                     <span class="view-button">View Full Report →</span>
                 </a>
+                
+                <!-- Delete Button -->
+                <form action="{{ url_for('delete_scan', scan_id=scan.id) }}" method="POST" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this scan?');">
+                    <button type="submit" class="btn-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
             </div>
             {% endfor %}
         </div>

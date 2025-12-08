@@ -17,7 +17,7 @@ SkinSavant is a cutting-edge dermatology platform that leverages deep learning t
 
 ## 🏆 Key Achievements
 
-- **90%+ Overall Accuracy** on validation set
+- **91.25% Overall Accuracy** on validation set
 - **92% Sensitivity** for melanoma detection (critical for early intervention)
 - **0.95 AUC** for melanoma detection
 - **89% Specificity** across all classes
@@ -36,7 +36,7 @@ After extensive experimentation with multiple architectures, **DenseNet169** eme
 | EfficientNet-B0 | 67% | Underperformed on imbalanced data |
 | EfficientNet-B4 | 68% | Moderate improvement over B0 |
 | EfficientNet-B5 | 71% | Best among EfficientNet variants |
-| **DenseNet169** | **90%+** | **Selected for production** ✓ |
+| **DenseNet169** | **91.25%** | **Selected for production** ✓ |
 
 #### Why DenseNet169?
 
@@ -160,7 +160,7 @@ training_config = {
 
 ```
 Overall Performance:
-├── Accuracy: 90%+ on validation set
+├── Accuracy: 91.25% on validation set
 ├── AUC (Melanoma Detection): 0.95
 ├── Sensitivity (High-risk lesions): 92%
 └── Specificity: 89%

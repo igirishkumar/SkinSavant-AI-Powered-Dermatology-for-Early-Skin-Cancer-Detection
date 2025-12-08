@@ -1,4 +1,4 @@
-# ai_core.py (Final, Corrected Version)
+# ai_core.py (Corrected with Proper Risk Levels)
 
 import torch
 import torch.nn as nn
@@ -14,13 +14,24 @@ CLASS_NAMES = [
     'akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc'
 ]
 CLASS_FULL_NAMES = {
-    'akiec': 'Actinic Keratoses / Bowen\'s Disease', 'bcc': 'Basal Cell Carcinoma',
-    'bkl': 'Benign Keratosis', 'df': 'Dermatofibroma',
-    'mel': 'Melanoma', 'nv': 'Melanocytic Nevi (Mole)', 'vasc': 'Vascular Lesions'
+    'akiec': 'Actinic Keratoses / Bowen\'s Disease', 
+    'bcc': 'Basal Cell Carcinoma',
+    'bkl': 'Benign Keratosis', 
+    'df': 'Dermatofibroma',
+    'mel': 'Melanoma', 
+    'nv': 'Melanocytic Nevi (Mole)', 
+    'vasc': 'Vascular Lesions'
 }
+
+# FIXED: Proper medical risk levels (Low/Medium/High only, no "Critical")
 CLASS_RISK = {
-    'akiec': 'High', 'bcc': 'High', 'bkl': 'Low', 'df': 'Low',
-    'mel': 'Critical', 'nv': 'Low', 'vasc': 'Low'
+    'akiec': 'High',      # Actinic Keratoses - Precancerous lesion
+    'bcc': 'High',        # Basal Cell Carcinoma - Most common skin cancer
+    'bkl': 'Low',         # Benign Keratosis - Non-cancerous growth
+    'df': 'Low',          # Dermatofibroma - Benign fibrous nodule
+    'mel': 'High',        # Melanoma - Most dangerous skin cancer
+    'nv': 'Low',          # Melanocytic Nevi - Common mole, usually benign
+    'vasc': 'Low'         # Vascular Lesions - Blood vessel abnormalities, usually benign
 }
 
 # --- Your Loading Functions ---
@@ -94,8 +105,11 @@ class SkinCancerClassifier:
             predicted_class = self.class_names[idx] if idx < len(self.class_names) else f"class_{idx}"
             all_probs = {self.class_names[i]: probabilities[0][i].item() for i in range(min(len(self.class_names), probabilities.shape[1]))}
             return {
-                'predicted_class': predicted_class, 'predicted_class_full': self.class_full_names.get(predicted_class, predicted_class),
-                'confidence': top_prob.item(), 'risk_level': self.class_risk.get(predicted_class, 'Unknown'), 'all_probabilities': all_probs
+                'predicted_class': predicted_class, 
+                'predicted_class_full': self.class_full_names.get(predicted_class, predicted_class),
+                'confidence': top_prob.item(), 
+                'risk_level': self.class_risk.get(predicted_class, 'Unknown'), 
+                'all_probabilities': all_probs
             }
     def get_model(self): return self.model
 
@@ -135,7 +149,7 @@ class GradCAM:
             
         return np.uint8(cam * 255)
 
-# --- NEW: Function to Generate Multiple Grad-CAMs ---
+# --- Function to Generate Multiple Grad-CAMs ---
 def generate_multiple_gradcams(model, input_tensor, image_path, class_names, target_layer_name):
     """Generates Grad-CAMs for the top 3 predicted classes."""
     gradcam_paths = []
@@ -163,11 +177,8 @@ def generate_multiple_gradcams(model, input_tensor, image_path, class_names, tar
         gradcam_output_dir = 'static/gradcam_outputs'
         os.makedirs(gradcam_output_dir, exist_ok=True)
         
-        # --- THIS IS THE FIX ---
-        # Use a simple, consistent filename
         base_name = os.path.basename(image_path).split('.')[0]
-        gradcam_filename = f"{base_name}_gradcam.jpg"
-        # --- END OF FIX ---
+        gradcam_filename = f"{base_name}_gradcam_{i+1}.jpg"
         
         gradcam_path = os.path.join(gradcam_output_dir, gradcam_filename)
         cv2.imwrite(gradcam_path, superimposed_img)
@@ -176,7 +187,7 @@ def generate_multiple_gradcams(model, input_tensor, image_path, class_names, tar
 
     return gradcam_paths
 
-# --- Main Prediction Function (Updated to use new feature) ---
+# --- Main Prediction Function ---
 def predict_and_explain(image_path):
     try:
         print(f"[DEBUG] Starting analysis for: {image_path}")
@@ -186,7 +197,8 @@ def predict_and_explain(image_path):
         
         image = Image.open(image_path).convert('RGB')
         transform = transforms.Compose([
-            transforms.Resize((224, 224)), transforms.ToTensor(),
+            transforms.Resize((224, 224)), 
+            transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
         input_tensor = transform(image).unsqueeze(0)
@@ -202,17 +214,14 @@ def predict_and_explain(image_path):
         if 'ResNet' in classifier.model_type:
             target_layer = 'layer4'
         
-        # --- CALL THE NEW FUNCTION ---
         print("[DEBUG] Generating multiple Grad-CAMs...")
         gradcam_paths = generate_multiple_gradcams(model, input_tensor, image_path, CLASS_NAMES, target_layer)
         print(f"[DEBUG] Generated Grad-CAMs: {gradcam_paths}")
         
-        # Determine simple risk for CSS
-        simple_risk = 'low'
-        if 'High' in risk_level or 'Critical' in risk_level:
-            simple_risk = 'high'
+        # Determine simple risk for CSS (lowercase for CSS classes)
+        simple_risk = risk_level.lower()  # Will be 'low', 'medium', or 'high'
         
-        print("[DEBUG] Analysis successful.")
+        print(f"[DEBUG] Analysis successful. Risk: {risk_level}, Simple Risk: {simple_risk}, Confidence: {confidence_score}")
         return predicted_class, confidence_score, gradcam_paths, full_class_name, simple_risk
 
     except Exception as e:
