@@ -9,7 +9,7 @@
 
 ## 🎯 Overview
 
-SkinSavant is a cutting-edge dermatology platform that leverages deep learning to classify skin lesions with remarkable accuracy. The system reduces diagnostic time by **70%** while improving documentation accuracy by **95%**, making it a valuable tool for clinical workflows.
+SkinSavant is an AI-powered dermatology platform using DenseNet169 deep learning to classify 7 types of skin lesions with 90%+ accuracy and 92% melanoma detection sensitivity. Features GradCAM explainability, GPT-powered chat, and voice interface.
 
 ## 📸 Web Application Interface
 
